@@ -1,11 +1,18 @@
+import { lazy, Suspense } from 'react';
 import { Layout } from './components/Layout';
+import { Loading } from './components/Prose';
 import { useRoute } from './lib/router';
 import Home from './pages/Home';
-import { NoteIndex, NotePage } from './pages/Notes';
-import { ProblemIndex, ProblemPage } from './pages/Problems';
-import { LabIndex, LabPage } from './pages/Lab';
-import About from './pages/About';
-import NotFound from './pages/NotFound';
+
+// Each section is its own chunk; the home page loads only what it needs.
+const Notes = lazy(() => import('./pages/Notes').then((m) => ({ default: m.NoteIndex })));
+const Note = lazy(() => import('./pages/Notes').then((m) => ({ default: m.NotePage })));
+const Problems = lazy(() => import('./pages/Problems').then((m) => ({ default: m.ProblemIndex })));
+const Problem = lazy(() => import('./pages/Problems').then((m) => ({ default: m.ProblemPage })));
+const Lab = lazy(() => import('./pages/Lab').then((m) => ({ default: m.LabIndex })));
+const LabSim = lazy(() => import('./pages/Lab').then((m) => ({ default: m.LabPage })));
+const About = lazy(() => import('./pages/About'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 export default function App() {
   const [section = '', id] = useRoute();
@@ -15,13 +22,13 @@ export default function App() {
       page = <Home />;
       break;
     case 'notes':
-      page = id ? <NotePage id={id} /> : <NoteIndex />;
+      page = id ? <Note id={id} /> : <Notes />;
       break;
     case 'problems':
-      page = id ? <ProblemPage id={id} /> : <ProblemIndex />;
+      page = id ? <Problem id={id} /> : <Problems />;
       break;
     case 'lab':
-      page = id ? <LabPage id={id} /> : <LabIndex />;
+      page = id ? <LabSim id={id} /> : <Lab />;
       break;
     case 'about':
       page = <About />;
@@ -29,5 +36,9 @@ export default function App() {
     default:
       page = <NotFound />;
   }
-  return <Layout section={section}>{page}</Layout>;
+  return (
+    <Layout section={section}>
+      <Suspense fallback={<Loading />}>{page}</Suspense>
+    </Layout>
+  );
 }

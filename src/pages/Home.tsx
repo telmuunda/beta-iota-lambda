@@ -1,12 +1,14 @@
-import { notes, problems, problemOfTheWeek } from '../lib/content';
+import { notes, problems, problemOfTheWeek, useProblemBody } from '../lib/content';
 import { TOPICS, pick, topicNames, useLang } from '../lib/i18n';
 import { href } from '../lib/router';
-import { Difficulty, Prose } from '../components/Prose';
+import { Difficulty, Loading, Prose } from '../components/Prose';
 import { sims } from '../sims';
 
 export default function Home() {
   const { lang, t } = useLang();
   const weekly = problemOfTheWeek();
+  const weeklyBody = useProblemBody(weekly?.id ?? '');
+  const weeklyText = weeklyBody && (weeklyBody[lang] ?? weeklyBody.en);
   const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
   return (
@@ -59,9 +61,9 @@ export default function Home() {
           <div className="boxed">
             <span className="boxed-label">{t.weekly}</span>
             <h3>
-              <span className="mono muted">№{weekly.number}</span> {pick(weekly.text, lang).title}
+              <span className="mono muted">№{weekly.number}</span> {pick(weekly.title, lang)}
             </h3>
-            <Prose md={pick(weekly.text, lang).statement} />
+            {weeklyText ? <Prose html={weeklyText.statement} /> : <Loading />}
             <div className="boxed-foot">
               <Difficulty level={weekly.difficulty} label={t.level[weekly.difficulty]} />
               <a href={href('problems', weekly.id)}>{t.openProblem} →</a>

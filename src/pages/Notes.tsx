@@ -1,7 +1,7 @@
-import { notes, problems } from '../lib/content';
+import { notes, problems, useNoteBody } from '../lib/content';
 import { pick, topicNames, useLang } from '../lib/i18n';
 import { href } from '../lib/router';
-import { Prose } from '../components/Prose';
+import { Loading, Prose } from '../components/Prose';
 import { Byline } from '../components/Byline';
 import { simById } from '../sims';
 import NotFound from './NotFound';
@@ -29,12 +29,20 @@ export function NoteIndex() {
 }
 
 export function NotePage({ id }: { id: string }) {
-  const { lang, t } = useLang();
   const note = notes.find((n) => n.id === id);
   if (!note) return <NotFound />;
+  return <NoteArticle id={id} />;
+}
+
+function NoteArticle({ id }: { id: string }) {
+  const { lang, t } = useLang();
+  const note = notes.find((n) => n.id === id)!;
+  const body = useNoteBody(id);
+  const text = body && (body[lang] ?? body.en ?? body.mn);
   const related = problems.filter((p) => p.topic === note.topic || p.notes.includes(note.id));
   const sim = simById(note.sim);
-  const missing = lang === 'mn' && !note.body.mn;
+  const missing = lang === 'mn' && body && !body.mn;
+  const jump = (hid: string) => document.getElementById(hid)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <article className="article">
@@ -47,8 +55,20 @@ export function NotePage({ id }: { id: string }) {
       <Byline authors={note.authors} />
       {missing && <p className="muted sans">Монгол орчуулга одоохондоо алга — англиар үзүүлж байна.</p>}
       <div className="article-layout">
-        <Prose md={pick(note.body, lang)} />
+        {text ? <Prose html={text.html} /> : <Loading />}
         <aside className="margin">
+          {text && text.headings.length > 2 && (
+            <>
+              <h4>{t.inThisNote}</h4>
+              <ol className="toc-mini">
+                {text.headings.map((h) => (
+                  <li key={h.id}>
+                    <button onClick={() => jump(h.id)}>{h.text}</button>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
           {sim && (
             <>
               <h4>{t.relatedSim}</h4>
@@ -66,7 +86,7 @@ export function NotePage({ id }: { id: string }) {
                 {related.map((p) => (
                   <li key={p.id}>
                     <span className="mono muted">№{p.number}</span>{' '}
-                    <a href={href('problems', p.id)}>{pick(p.text, lang).title}</a>
+                    <a href={href('problems', p.id)}>{pick(p.title, lang)}</a>
                   </li>
                 ))}
               </ul>

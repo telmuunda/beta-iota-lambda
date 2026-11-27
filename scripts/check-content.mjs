@@ -5,47 +5,23 @@
  */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
-import katex from 'katex';
+import { TOPICS, splitFront, splitLangs, scanBlocks, render } from './content-lib.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
-const TOPICS = ['mechanics', 'oscillations', 'gravitation', 'electromagnetism', 'thermo', 'optics'];
 const SIMS = [...readFileSync(join(root, 'src/sims/index.ts'), 'utf8').matchAll(/id:\s*'([\w-]+)'/g)].map((m) => m[1]);
 const GITHUB_USER = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/;
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
 
-function splitFront(raw) {
-  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-  if (!m) return null;
-  const front = {};
-  for (const line of m[1].split(/\r?\n/)) {
-    const i = line.indexOf(':');
-    if (i > 0) front[line.slice(0, i).trim()] = line.slice(i + 1).replace(/\s+#.*$/, '').trim().replace(/^["']|["']$/g, '');
-  }
-  return { front, body: m[2] };
-}
-
-function splitLangs(body) {
-  const out = {};
-  const parts = body.split(/<!--\s*(en|mn)\s*-->/);
-  for (let i = 1; i < parts.length; i += 2) out[parts[i]] = parts[i + 1].trim();
-  return out;
-}
-
-function checkMath(file, lang, md) {
-  const blocks = [...md.matchAll(/\$\$([\s\S]+?)\$\$/g)].map((m) => [m[1], true]);
-  const rest = md.replace(/\$\$[\s\S]+?\$\$/g, '');
-  const inline = [...rest.matchAll(/(^|[^\\])\$([^$\n]+?)\$/g)].map((m) => [m[2], false]);
-  for (const [tex, display] of [...blocks, ...inline]) {
-    try {
-      katex.renderToString(tex.trim(), { displayMode: display, throwOnError: true });
-    } catch (e) {
-      fail(file, `[${lang}] formula does not render: ${String(e.message).split('\n')[0]}\n    ${tex.trim().slice(0, 80)}`);
-    }
-  }
-  const unmatched = rest.replace(/(^|[^\\])\$([^$\n]+?)\$/g, '').match(/(^|[^\\])\$/m);
-  if (unmatched) fail(file, `[${lang}] a $ has no closing $ (write \\$ for a literal dollar sign)`);
+/** Formulas, unmatched $, and :::blocks. */
+function checkText(file, lang, md) {
+  const { errors: blockErrors } = scanBlocks(md);
+  for (const e of blockErrors) fail(file, `[${lang}] ${e}`);
+  const { mathErrors } = render(md, lang);
+  for (const e of mathErrors) fail(file, `[${lang}] formula does not render: ${e.message}\n    ${e.tex.trim().slice(0, 80)}`);
+  const rest = md.replace(/\$\$[\s\S]+?\$\$/g, '').replace(/(^|[^\\])\$([^$\n]+?)\$/g, '$1');
+  if (/(^|[^\\])\$/m.test(rest)) fail(file, `[${lang}] a $ has no closing $ (write \\$ for a literal dollar sign)`);
 }
 
 function checkAuthor(file, front) {
@@ -61,7 +37,7 @@ function checkLangs(file, body, { needTitle = true } = {}) {
     if (!langs[l]) fail(file, `missing the <!-- ${l} --> block`);
     else if (needTitle && !/^#\s+\S/.test(langs[l])) fail(file, `[${l}] must start with a "# Title" line`);
   }
-  for (const [l, md] of Object.entries(langs)) checkMath(file, l, md);
+  for (const [l, md] of Object.entries(langs)) checkText(file, l, md);
   return langs;
 }
 
@@ -119,6 +95,16 @@ for (const name of readdirSync(probDir).filter((f) => f.endsWith('.md'))) {
   for (const [l, md] of Object.entries(langs)) {
     if (!/<!--\s*hint\s*-->/.test(md)) fail(file, `[${l}] missing <!-- hint -->`);
     if (!/<!--\s*solution\s*-->/.test(md)) fail(file, `[${l}] missing <!-- solution -->`);
+  }
+}
+
+// ---------- pages ----------
+const pageDir = join(root, 'content/pages');
+if (existsSync(pageDir)) {
+  for (const name of readdirSync(pageDir).filter((f) => f.endsWith('.md'))) {
+    const parsed = splitFront(readFileSync(join(pageDir, name), 'utf8'));
+    if (!parsed) fail(`content/pages/${name}`, 'missing the --- frontmatter --- block at the top');
+    else checkLangs(`content/pages/${name}`, parsed.body);
   }
 }
 
