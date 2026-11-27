@@ -1,5 +1,7 @@
 # beta-iota-lambda
 
+**Live site:** https://telmuunda.github.io/beta-iota-lambda/
+
 Platform for learning and advancing physics knowledge for Olympiad preparation, made by students, for students. In both Mongolian and English, students can interact with simulations, read quality notes and access problem sets.
 
 Олимпиадад бэлдэх физикийн мэдлэгээ ахиулах платформ — сурагчдаас сурагчдад. Монгол, англи хоёр хэлээр симуляц ажиллуулж, тэмдэглэл уншиж, бодлого бодно.
@@ -22,7 +24,10 @@ You need Node.js 18 or newer.
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # static site in dist/ — host it anywhere (e.g. GitHub Pages)
+npm run check:content   # check notes and problems for mistakes
 ```
+
+Every push to `main` deploys to GitHub Pages (`.github/workflows/deploy.yml`). Every pull request runs the content check, the type-check and the build (`.github/workflows/ci.yml`).
 
 ## Stack
 

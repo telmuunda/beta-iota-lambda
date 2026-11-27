@@ -17,7 +17,12 @@ function splitFront(raw: string): { front: Front; body: string } {
   const front: Front = {};
   for (const line of m[1].split(/\r?\n/)) {
     const i = line.indexOf(':');
-    if (i > 0) front[line.slice(0, i).trim()] = line.slice(i + 1).trim().replace(/^["']|["']$/g, '');
+    if (i > 0)
+      front[line.slice(0, i).trim()] = line
+        .slice(i + 1)
+        .replace(/\s+#.*$/, '') // allow `key: value   # comment`
+        .trim()
+        .replace(/^["']|["']$/g, '');
   }
   return { front, body: m[2] };
 }
@@ -37,6 +42,8 @@ function takeTitle(md: string): { title: string; rest: string } {
 }
 
 const idOf = (path: string) => path.split('/').pop()!.replace(/\.md$/, '');
+/** GitHub usernames, written `author: name` or `author: a, b`. */
+const authorList = (s?: string) => list(s).map((a) => a.replace(/^@/, ''));
 const list = (s?: string) => (s ? s.split(',').map((x) => x.trim()).filter(Boolean) : []);
 
 export interface Localised<T> {
@@ -46,6 +53,7 @@ export interface Localised<T> {
 
 export interface Note {
   id: string;
+  authors: string[];
   topic: Topic;
   order: number;
   sim?: string;
@@ -63,6 +71,7 @@ export interface ProblemText {
 
 export interface Problem {
   id: string;
+  authors: string[];
   number: number;
   topic: Topic;
   difficulty: number;
@@ -86,6 +95,7 @@ export const notes: Note[] = Object.entries(noteFiles)
     const langs = splitLangs(body);
     return {
       id: idOf(path),
+      authors: authorList(front.author),
       topic: front.topic as Topic,
       order: Number(front.order ?? 99),
       sim: front.sim,
@@ -109,6 +119,7 @@ export const problems: Problem[] = Object.entries(problemFiles)
     const id = idOf(path);
     return {
       id,
+      authors: authorList(front.author),
       number: Number(id.match(/\d+/)?.[0] ?? 0),
       topic: front.topic as Topic,
       difficulty: Number(front.difficulty ?? 1),
