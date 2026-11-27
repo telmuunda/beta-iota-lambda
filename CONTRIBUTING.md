@@ -1,5 +1,7 @@
 # Contributing / Хувь нэмэр оруулах
 
+**Licence:** by opening a pull request you agree that your contribution is released under the project's licences: CC BY-SA 4.0 for anything in `content/`, MIT for code. If you adapt a problem from an olympiad or a book, rewrite it in your own words, cite the original in `source:`, and never copy an official solution word for word.
+
 You don't need to know React. Notes and problems are single Markdown files.
 
 ## Adding a problem
@@ -16,6 +18,7 @@ tolerance: 0.01           # optional: relative tolerance (default 1%)
 source: IPhO 2019 T1      # optional
 sim: projectile           # optional: link to a Lab figure (projectile | pendulum | orbit)
 notes: projectile-motion  # optional: comma-separated note ids
+author: your-github-name  # optional: credit yourself (several: a, b)
 ---
 
 <!-- en -->
@@ -56,6 +59,7 @@ order: 4                  # position in the list
 sim: orbit                # optional
 summary_en: One or two sentences for the index.
 summary_mn: Жагсаалтад харагдах нэг хоёр өгүүлбэр.
+author: your-github-name  # optional
 ---
 
 <!-- en -->
@@ -70,6 +74,18 @@ summary_mn: Жагсаалтад харагдах нэг хоёр өгүүлбэ
 ```
 
 `##` headings are numbered automatically. A `>` blockquote is drawn as a margin remark.
+
+## Credit
+
+Add `author: your-github-name` to the frontmatter and the page shows "Written by @your-github-name", linked to your GitHub profile. Several people: `author: name1, name2`. If you improve someone else's file, add yourself to the list.
+
+## Before you open a pull request
+
+```bash
+npm run check:content
+```
+
+This checks every file in `content/`: required fields, both language blocks, hint and solution markers, numeric answers, links to notes and simulations, and that every formula renders. The same check runs automatically on your pull request, and the build must pass before it can be merged.
 
 ## Style
 

@@ -4,6 +4,7 @@ import { TOPICS, pick, topicNames, useLang, type Topic } from '../lib/i18n';
 import { href } from '../lib/router';
 import { useSolved } from '../lib/progress';
 import { Difficulty, Prose } from '../components/Prose';
+import { Byline } from '../components/Byline';
 import { simById } from '../sims';
 import NotFound from './NotFound';
 
@@ -145,6 +146,7 @@ export function ProblemPage({ id }: { id: string }) {
             {t.source}: {p.source}
           </span>
         )}
+        {p.authors.length > 0 && <Byline authors={p.authors} />}
       </div>
       <div className="statement">
         <Prose md={text.statement} />

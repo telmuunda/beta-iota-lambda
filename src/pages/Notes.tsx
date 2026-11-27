@@ -2,6 +2,7 @@ import { notes, problems } from '../lib/content';
 import { pick, topicNames, useLang } from '../lib/i18n';
 import { href } from '../lib/router';
 import { Prose } from '../components/Prose';
+import { Byline } from '../components/Byline';
 import { simById } from '../sims';
 import NotFound from './NotFound';
 
@@ -43,6 +44,7 @@ export function NotePage({ id }: { id: string }) {
       <p className="kicker">{topicNames[lang][note.topic]}</p>
       <h1>{pick(note.title, lang)}</h1>
       <p className="lede">{pick(note.summary, lang)}</p>
+      <Byline authors={note.authors} />
       {missing && <p className="muted sans">Монгол орчуулга одоохондоо алга — англиар үзүүлж байна.</p>}
       <div className="article-layout">
         <Prose md={pick(note.body, lang)} />
