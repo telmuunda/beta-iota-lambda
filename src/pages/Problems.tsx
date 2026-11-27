@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { problems, notes, type Problem } from '../lib/content';
+import { problems, notes, useProblemBody, type Problem } from '../lib/content';
 import { TOPICS, pick, topicNames, useLang, type Topic } from '../lib/i18n';
 import { href } from '../lib/router';
 import { useSolved } from '../lib/progress';
-import { Difficulty, Prose } from '../components/Prose';
+import { Difficulty, Loading, Prose } from '../components/Prose';
 import { Byline } from '../components/Byline';
 import { simById } from '../sims';
 import NotFound from './NotFound';
@@ -45,7 +45,7 @@ export function ProblemIndex() {
             <tr key={p.id}>
               <td className="num">{p.number}</td>
               <td className="ptitle">
-                <a href={href('problems', p.id)}>{pick(p.text, lang).title}</a>
+                <a href={href('problems', p.id)}>{pick(p.title, lang)}</a>
               </td>
               <td className="ptopic">{topicNames[lang][p.topic]}</td>
               <td>
@@ -120,8 +120,9 @@ export function ProblemPage({ id }: { id: string }) {
   const { lang, t } = useLang();
   const idx = problems.findIndex((x) => x.id === id);
   const p = problems[idx];
+  const body = useProblemBody(id);
   if (!p) return <NotFound />;
-  const text = pick(p.text, lang);
+  const text = body && (body[lang] ?? body.en ?? body.mn);
   const sim = simById(p.sim);
   const linked = notes.filter((n) => p.notes.includes(n.id));
   const prev = problems[idx - 1],
@@ -135,7 +136,7 @@ export function ProblemPage({ id }: { id: string }) {
       <p className="kicker">
         {t.problem} №{p.number}
       </p>
-      <h1>{text.title}</h1>
+      <h1>{pick(p.title, lang)}</h1>
       <div className="problem-head">
         <span>{topicNames[lang][p.topic]}</span>
         <span>
@@ -148,20 +149,18 @@ export function ProblemPage({ id }: { id: string }) {
         )}
         {p.authors.length > 0 && <Byline authors={p.authors} />}
       </div>
-      <div className="statement">
-        <Prose md={text.statement} />
-      </div>
+      <div className="statement">{text ? <Prose html={text.statement} /> : <Loading />}</div>
       <AnswerBox key={p.id} p={p} />
-      {text.hint && (
+      {text?.hint && (
         <details className="fold">
           <summary>{t.showHint}</summary>
-          <Prose md={text.hint} />
+          <Prose html={text.hint} />
         </details>
       )}
-      {text.solution && (
+      {text?.solution && (
         <details className="fold">
           <summary>{t.showSolution}</summary>
-          <Prose md={text.solution} />
+          <Prose html={text.solution} />
         </details>
       )}
       {(sim || linked.length > 0) && (

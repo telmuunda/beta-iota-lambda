@@ -73,7 +73,31 @@ author: your-github-name  # optional
 …
 ```
 
-`##` headings are numbered automatically. A `>` blockquote is drawn as a margin remark.
+`##` headings are numbered automatically and listed in an "In this note" menu. A `>` blockquote is drawn as a margin remark. Number equations with `\tag{1}`.
+
+Notes can also use blocks. Each starts with `:::kind optional title` and ends with a line containing only `:::`; blocks cannot be nested:
+
+```markdown
+:::derivation Period of a pendulum
+Step-by-step working…
+:::
+
+:::example A 1 m pendulum on the Moon
+Full worked solution…
+:::
+
+:::check
+A question for the reader.
+:::
+
+:::answer
+Its answer (shown folded).
+:::
+```
+
+Other kinds: `:::pitfall` (a common mistake) and `:::summary` (key results).
+
+Long notes are written with the help of a Claude project. See `handoff/README.md`.
 
 ## Credit
 

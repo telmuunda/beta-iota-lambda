@@ -984,3 +984,126 @@ input[type='range']:hover::-webkit-slider-thumb {
   gap: 1rem;
   flex-wrap: wrap;
 }
+
+/* ---------- long-form note blocks (:::derivation, :::example …) ---------- */
+
+.block {
+  margin: 1.6rem 0;
+  max-width: var(--measure);
+}
+.block-label {
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.block-title {
+  font-weight: 600;
+  margin-left: 0.6rem;
+}
+.block-body > :last-child {
+  margin-bottom: 0;
+}
+.block-head {
+  margin-bottom: 0.5rem;
+}
+
+/* derivation: a ruled margin, foldable */
+.block-derivation {
+  border-left: 3px double var(--ink);
+  padding: 0.1rem 0 0.1rem 1.1rem;
+}
+.block-derivation > summary,
+.block-answer > summary {
+  cursor: pointer;
+  list-style: none;
+  margin-bottom: 0.4rem;
+}
+.block-derivation > summary::-webkit-details-marker,
+.block-answer > summary::-webkit-details-marker {
+  display: none;
+}
+.block-derivation > summary::after {
+  content: ' −';
+  font-family: var(--mono);
+  color: var(--red);
+}
+.block-derivation:not([open]) > summary::after {
+  content: ' + show';
+  font-family: var(--sans);
+  font-size: 0.8rem;
+}
+
+/* worked example: framed like a problem sheet */
+.block-example {
+  border: 1.5px solid var(--ink);
+  padding: 0.9rem 1.1rem 1rem;
+  box-shadow: 4px 4px 0 var(--paper-2);
+}
+
+/* check yourself + its answer */
+.block-check {
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.7rem 0;
+  margin-bottom: 0;
+}
+.block-check .block-label::before {
+  content: '? ';
+  color: var(--red);
+  font-weight: 600;
+}
+.block-check + .block-answer {
+  margin-top: 0;
+}
+.block-answer {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.5rem 0;
+}
+.block-answer > summary .block-label::before {
+  content: '+ ';
+  font-family: var(--mono);
+  color: var(--red);
+}
+.block-answer[open] > summary .block-label::before {
+  content: '− ';
+}
+
+.block-pitfall {
+  border-left: 3px solid var(--red);
+  padding: 0.1rem 0 0.1rem 1rem;
+}
+.block-pitfall .block-label {
+  color: var(--red);
+}
+
+.block-summary {
+  border: 3px double var(--ink);
+  padding: 0.9rem 1.1rem;
+  background: var(--paper-2);
+}
+
+.toc-mini {
+  padding-left: 1.2rem;
+  margin: 0 0 1.4rem;
+}
+.toc-mini li {
+  margin: 0.25rem 0;
+}
+.toc-mini button {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--blue);
+  text-align: left;
+  cursor: pointer;
+}
+.toc-mini button:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+.prose h2 {
+  scroll-margin-top: 1rem;
+}

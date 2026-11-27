@@ -1,6 +1,6 @@
 ---
 topic: oscillations
-order: 2
+order: 20
 sim: pendulum
 summary_en: Every pendulum problem starts with sin θ ≈ θ. Here is what that approximation costs, how to correct it, and the energy method that works for any oscillator.
 summary_mn: Дүүжингийн бодлого бүр sin θ ≈ θ-ээс эхэлдэг. Энэ ойролцоолол юуг алддаг, түүнийг хэрхэн засах, мөн аливаа хэлбэлзэгчид ажилладаг энергийн арга.

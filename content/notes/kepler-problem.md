@@ -1,6 +1,6 @@
 ---
 topic: gravitation
-order: 3
+order: 30
 sim: orbit
 summary_en: Two conservation laws are enough to find any orbit without solving a differential equation. Effective potential, vis-viva, and why the period only cares about a.
 summary_mn: Дифференциал тэгшитгэл бодолгүйгээр аливаа тойрог замыг олоход хоёр хадгалалтын хууль хангалттай. Эффектив потенциал, вис-вива, яагаад үе зөвхөн a-аас хамаардаг вэ.
