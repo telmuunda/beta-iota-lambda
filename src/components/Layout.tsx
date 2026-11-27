@@ -45,7 +45,12 @@ export function Layout({ section, children }: { section: string; children: React
       </main>
       <footer className="colophon">
         <div className="wrap">
-          <span>{t.footer}</span>
+          <span>
+            {t.footer}{' '}
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">
+              {t.licence}
+            </a>
+          </span>
           <a href={REPO_URL}>{t.contribute} ↗</a>
         </div>
       </footer>

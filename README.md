@@ -27,3 +27,8 @@ npm run build    # static site in dist/ — host it anywhere (e.g. GitHub Pages)
 ## Stack
 
 React + TypeScript + Vite, KaTeX for formulas, `marked` for Markdown, and a hand-written stylesheet (`src/styles.css`). No backend and no accounts: the language choice and the problems you've solved are remembered in your browser only.
+
+## Licence
+
+- **Code** (everything outside `content/`): [MIT](LICENSE).
+- **Notes and problems** (`content/`): [CC BY-SA 4.0](content/LICENSE.md). Share and adapt freely, credit beta-iota-lambda, and keep adaptations under the same licence.

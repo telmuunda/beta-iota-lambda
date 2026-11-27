@@ -1,5 +1,7 @@
 # Contributing / Хувь нэмэр оруулах
 
+**Licence:** by opening a pull request you agree that your contribution is released under the project's licences: CC BY-SA 4.0 for anything in `content/`, MIT for code. If you adapt a problem from an olympiad or a book, rewrite it in your own words, cite the original in `source:`, and never copy an official solution word for word.
+
 You don't need to know React. Notes and problems are single Markdown files.
 
 ## Adding a problem
